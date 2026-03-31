@@ -22,3 +22,14 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+package-lock.json
+
+/prisma/migrations
+/generated/prisma
+
+/uploads/admin/*
+/uploads/inmate/*
+/uploads/pr/*
+/uploads/legal/*
+

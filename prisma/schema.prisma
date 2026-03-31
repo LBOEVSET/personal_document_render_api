@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ContentType {
+  IMAGE
+  VIDEO
+  PDF
+  COVER
+}
+
+enum Department {
+  INMATE
+  LEGAL
+  PR
+}
+
+model MainMenu {
+  id     String @id
+  title  String
+  icon   String
+  href   String
+
+  createdAt DateTime @default(now())
+}
+
+model LegalCategory {
+  id    String @id
+  title String
+
+  subCategories LegalSubCategory[]
+}
+
+model LegalSubCategory {
+  id         String @id
+  title      String
+  categoryId String
+
+  category LegalCategory @relation(fields: [categoryId], references: [id])
+}
+
+model PRDepartment {
+  id    String @id
+  title String
+  icon  String
+}
+
+model ContentItem {
+  id    String @id
+  title String
+
+  type ContentType
+
+  link  String?
+  file  String?
+  cover String?
+
+  department Department?
+
+  legalId       String?
+  subLegalId    String?
+  legalGroupId  String?
+
+  prId       String?
+  subPrId    String?
+  prGroupId  String?
+
+  legal      LegalMenu?           @relation(fields: [legalId], references: [id])
+  subLegal   SubLegalMenu?        @relation(fields: [subLegalId], references: [id])
+  legalGroup SubGroupLegalMenu?   @relation(fields: [legalGroupId], references: [id])
+
+  pr      PRPracticeMenu?         @relation(fields: [prId], references: [id])
+  subPr   SubPRPracticeMenu?      @relation(fields: [subPrId], references: [id])
+  prGroup SubGroupPRPracticeMenu? @relation(fields: [prGroupId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model LegalDocument {
+  id    String @id
+  title String
+  type  String
+
+  categoryKey String // เช่น 1-1
+}
+
+model LegalMenu {
+  id        String   @id
+  title     String
+  order     Int
+
+  subMenus  SubLegalMenu[]
+  contentItems ContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubLegalMenu {
+  id         String   @id
+  title      String
+  order      Int
+
+  legalId    String
+  legal      LegalMenu @relation(fields: [legalId], references: [id])
+
+  groups     SubGroupLegalMenu[]
+  contentItems ContentItem[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SubGroupLegalMenu {
+  id         String   @id
+  title      String
+  order      Int
+
+  subId      String
+  sub        SubLegalMenu @relation(fields: [subId], references: [id])
+
+  contents   ContentItem[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model PRPracticeMenu {
+  id        String   @id
+  title     String
+  order     Int
+
+  subMenus  SubPRPracticeMenu[]
+  contentItems ContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubPRPracticeMenu {
+  id        String   @id
+  title     String
+  order     Int
+
+  prId      String
+  pr        PRPracticeMenu @relation(fields: [prId], references: [id])
+
+  groups    SubGroupPRPracticeMenu[]
+  contentItems ContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubGroupPRPracticeMenu {
+  id        String   @id
+  title     String
+  order     Int
+
+  subId     String
+  sub       SubPRPracticeMenu @relation(fields: [subId], references: [id])
+
+  contents  ContentItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Infographic {
+  id   String @id
+  path String
+}
+
+model InmateProfile {
+  id           String @id
+  userId       String @unique
+  name         String
+  status       String
+  daysLeft     Int
+  totalDays    Int
+  cases        Int
+  caseType     String
+  sentence     String
+  startDate    String
+  transferFrom String
+  releaseDate  String
+  progressStep Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  detail InmateDetail?
+  @@index([userId])
+}
+
+model InmateDetail {
+  id        String @id
+  age       String
+  nationality String
+  religion  String
+  holdType  String
+  holdAgency String
+
+  inmateId String @unique
+  inmate   InmateProfile @relation(fields: [inmateId], references: [id])
+}
+
+model User {
+  id              String          @id @default(uuid())
+  username        String          @unique
+  passwordHash    String?
+  role            UserRole        @default(INMATE)
+  name            String
+  profileImage    String?
+  accessToken     String?
+  refreshToken    String?
+  status          Int             @default(1)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @default(now()) @updatedAt
+
+  inmateProfile   InmateProfile?
+
+  @@index([status])
+}
+
+enum UserRole {
+  INMATE
+  ADMIN
+}
