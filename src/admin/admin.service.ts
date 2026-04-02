@@ -14,12 +14,8 @@ export class AdminService {
   async createContent(dto: CreateContentDto) {
     const where = {
       ...(dto.mainId && dto.department === 'LEGAL' && { legalId: dto.mainId }),
-      ...(dto.subId && dto.department === 'LEGAL' && { subLegalId: dto.subId }),
-      ...(dto.groupId && dto.department === 'LEGAL' && { legalGroupId: dto.groupId }),
 
       ...(dto.mainId && dto.department === 'PR' && { prId: dto.mainId }),
-      ...(dto.subId && dto.department === 'PR' && { subPrId: dto.subId }),
-      ...(dto.groupId && dto.department === 'PR' && { prGroupId: dto.groupId }),
 
       ...(dto.department && { department: dto.department }),
     };
@@ -67,12 +63,8 @@ export class AdminService {
 
     const where = {
       ...(sample.mainId && sample.department === 'LEGAL' && { legalId: sample.mainId }),
-      ...(sample.subId && sample.department === 'LEGAL' && { subLegalId: sample.subId }),
-      ...(sample.groupId && sample.department === 'LEGAL' && { legalGroupId: sample.groupId }),
 
       ...(sample.mainId && sample.department === 'PR' && { prId: sample.mainId }),
-      ...(sample.subId && sample.department === 'PR' && { subPrId: sample.subId }),
-      ...(sample.groupId && sample.department === 'PR' && { prGroupId: sample.groupId }),
 
       ...(sample.department && { department: sample.department }),
     };
@@ -139,8 +131,6 @@ export class AdminService {
     const segments = [base];
 
     if (dto.mainId) segments.push(dto.mainId);
-    if (dto.subId) segments.push(dto.subId);
-    if (dto.groupId) segments.push(dto.groupId);
 
     if (!dto.file) {
       throw new BadRequestException('File is required (upload first)');
@@ -176,23 +166,15 @@ export class AdminService {
     if (dto.department === 'LEGAL') {
       return {
         legalId: dto.mainId ?? null,
-        subLegalId: dto.subId ?? null,
-        legalGroupId: dto.groupId ?? null,
 
         prId: null,
-        subPrId: null,
-        prGroupId: null,
       };
     }
 
     return {
       prId: dto.mainId ?? null,
-      subPrId: dto.subId ?? null,
-      prGroupId: dto.groupId ?? null,
 
       legalId: null,
-      subLegalId: null,
-      legalGroupId: null,
     };
   }
 
@@ -248,7 +230,8 @@ export class AdminUploadService {
     return {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const userType = req.body.userType || 'default';
+          const dto = req.query;
+          const userType = dto.userType ?? 'default';
 
           const folder = `./uploads/${userType}`;
 
@@ -285,8 +268,6 @@ export class AdminUploadService {
         const segments = [base];
 
         if (dto.mainId) segments.push(dto.mainId);
-        if (dto.subId) segments.push(dto.subId);
-        if (dto.groupId) segments.push(dto.groupId);
 
         const folder = `./uploads/${segments.join('/')}`;
 

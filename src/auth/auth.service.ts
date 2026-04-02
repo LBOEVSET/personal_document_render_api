@@ -49,12 +49,12 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '15m',
+      expiresIn: '30m', //token expired
     });
 
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET,
-      expiresIn: '7d',
+      expiresIn: '7d', //refresh token expired
     });
 
     return { accessToken, refreshToken };
@@ -82,17 +82,17 @@ export class AuthService {
     // Generate new tokens (ROTATION)
     const tokens = await this.generateTokens(user.username);
 
-    const hashedRefreshToken = await bcrypt.hash(
-      tokens.refreshToken,
+    const hashedAccessToken = await bcrypt.hash(
+      tokens.accessToken,
       10,
     );
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { refreshToken: hashedRefreshToken },
+      data: { accessToken: hashedAccessToken },
     });
 
-    return { refreshToken: tokens.refreshToken };
+    return { accessToken: tokens.accessToken };
   }
 
   async logout(dto: LogOutDto) {

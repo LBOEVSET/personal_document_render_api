@@ -8,14 +8,6 @@ export class MediaSubCategoryDto {
   @IsOptional()
   @IsString()
   mainId?: string;
-
-  @IsOptional()
-  @IsString()
-  subId?: string;
-
-  @IsOptional()
-  @IsString()
-  groupId?: string;
 }
 
 export class AllContentListDto {

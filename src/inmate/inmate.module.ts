@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InmateService } from './inmate.service';
-import { InmateController, AdminInmateController } from './inmate.controller';
+import { InmateController } from './inmate.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
     ])
   ],
-  controllers: [InmateController, AdminInmateController],
+  controllers: [InmateController],
   providers: [InmateService],
 })
 export class InmateModule {}

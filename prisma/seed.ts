@@ -17,13 +17,9 @@ function mapRelationFromPath(item: any) {
   const segments = path.split('/').filter(Boolean);
 
   let mainId: string | null = null;
-  let subId: string | null = null;
-  let groupId: string | null = null;
 
   for (const seg of segments) {
     if (seg.endsWith('-main')) mainId = seg;
-    if (seg.endsWith('-sub')) subId = seg;
-    if (seg.endsWith('-group')) groupId = seg;
   }
 
   const isLegal = segments[0] === 'legal';
@@ -36,8 +32,6 @@ function mapRelationFromPath(item: any) {
   // ======================
   if (isLegal) {
     if (mainId) data.legalId = mainId;
-    if (subId) data.subLegalId = subId;
-    if (groupId) data.legalGroupId = groupId;
   }
 
   // ======================
@@ -45,8 +39,6 @@ function mapRelationFromPath(item: any) {
   // ======================
   if (isPR) {
     if (mainId) data.prId = mainId;
-    if (subId) data.subPrId = subId;
-    if (groupId) data.prGroupId = groupId;
   }
 
   return data;
@@ -65,37 +57,6 @@ async function main() {
     ]
   });
 
-  // ======================
-  // LEGAL CATEGORY
-  // ======================
-  await prisma.legalCategory.createMany({
-    data: [
-      { id: '1', title: 'กฎหมายต่างๆที่เกี่ยวข้อง' },
-      { id: '2', title: 'สิทธิประโยชน์ของผู้ต้องขังในเรือนจำ' },
-      { id: '3', title: 'การฝากขัง' },
-      { id: '4', title: 'การขอประกันตัวในชั้นศาล' },
-      { id: '5', title: 'ความรู้เกี่ยวกับกระบวนการยุติธรรมและคดีอาญา' },
-    ]
-  });
-
-  // ======================
-  // PR DEPARTMENT
-  // ======================
-  await prisma.pRDepartment.createMany({
-    data: [
-      { id: 'admin', title: 'ฝ่ายบริหารทั่วไป', icon: '/icons/pr-admin.png' },
-      { id: 'govern', title: 'ฝ่ายปกครอง', icon: '/icons/pr-govern.png' },
-      { id: 'practice', title: 'ฝ่ายทัณฑปฏิบัติ', icon: '/icons/pr-practice.png' },
-      { id: 'class1', title: 'ฝ่ายจำแนกลักษณะผู้ต้องขัง', icon: '/icons/pr-class1.png' },
-      { id: 'dev1', title: 'ฝ่ายพัฒนาผู้ต้องขัง 1', icon: '/icons/pr-dev1.png' },
-      { id: 'dev2', title: 'ฝ่ายพัฒนาผู้ต้องขัง 2', icon: '/icons/pr-dev2.png' },
-      { id: 'edu', title: 'ฝ่ายการศึกษาและพัฒนาจิตใจ', icon: '/icons/pr-edu.png' },
-      { id: 'welfare', title: 'ฝ่ายสวัสดิการ', icon: '/icons/pr-welfare.png' },
-      { id: 'social', title: 'ฝ่ายสงเคราะห์ผู้ต้องขัง', icon: '/icons/pr-social.png' },
-      { id: 'hospital', title: 'สถานพยาบาล', icon: '/icons/pr-hospital.png' },
-    ]
-  });
-
   // ===============================
   // ⚖️ Legal Menu
   // ===============================
@@ -108,33 +69,6 @@ async function main() {
       { id: "5-main", title: 'การปล่อยตัวชั่วคราวและการบังคับคดีผู้ประกัน', order: 5 },
       { id: "6-main", title: 'การปล่อยไม่มีหลักประกัน', order: 6 },
       { id: "7-main", title: 'การคุ้มครองสิทธิและเสรีภาพ', order: 7 },
-    ],
-    skipDuplicates: true,
-  });
-
-  // ===============================
-  // ⚖️ Sub Legal Menu
-  // ===============================
-  await prisma.subLegalMenu.createMany({
-    data: [
-      { id: "1-sub", legalId: "1-main", title: '1. ของกลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขัง', order: 1 },
-      { id: "2-sub", legalId: "1-main", title: '2. ของกลุ่มงานเลื่อนขั้นผู้ต้องขัง', order: 2 },
-      { id: "3-sub", legalId: "1-main", title: '3. ของกลุ่มงานสาธารณและงานนอกเรือนจำ', order: 3 },
-      { id: "4-sub", legalId: "1-main", title: '4. ของกลุ่มงานย้ายผู้ต้องขัง', order: 4 },
-      { id: "5-sub", legalId: "1-main", title: '5. ของกลุ่มงานการลดวันต้องโทษ', order: 5 },
-      { id: "6-sub", legalId: "1-main", title: '6. ของกลุ่มงานพักการลงโทษ', order: 6 },
-      { id: "7-sub", legalId: "1-main", title: '7. ของกลุ่มงานอภัยโทษ', order: 7 },
-    ],
-    skipDuplicates: true,
-  });
-
-  // ===============================
-  // ⚖️ Sub Group Legal Menu
-  // ===============================
-  await prisma.subGroupLegalMenu.createMany({
-    data: [
-      { id: "1-group", subId: "1-sub", title: 'กฎกระทรวงจำแนกฯ พ.ศ. 2563', order: 1 },
-      { id: "2-group", subId: "1-sub", title: 'พ.ร.บ.ราชทัณฑ์ พ.ศ. 2560', order: 2 },
     ],
     skipDuplicates: true,
   });
@@ -156,61 +90,6 @@ async function main() {
       { id: "10-main", title: 'สถานพยาบาล', order: 10 },
     ],
     skipDuplicates: true,
-  });
-
-  // ===============================
-  // 📢 Sub PR Practice Menu
-  // ===============================
-  await prisma.subPRPracticeMenu.createMany({
-    data: [
-      { id: "1-sub", prId: "3-main", title: 'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขัง', order: 1 },
-      { id: "2-sub", prId: "3-main", title: 'กลุ่มงานเลื่อนชั้นผู้ต้องขัง', order: 2 },
-      { id: "3-sub", prId: "3-main", title: 'กลุ่มงานวินัยผู้ต้องขัง', order: 3 },
-      { id: "4-sub", prId: "3-main", title: 'กลุ่มงานสาธารณะและงานนอกเรือนจำ', order: 4 },
-      { id: "5-sub", prId: "3-main", title: 'กลุ่มงานย้ายผู้ต้องขัง', order: 5 },
-      { id: "6-sub", prId: "3-main", title: 'กลุ่มงานการลดวันต้องโทษ', order: 6 },
-      { id: "7-sub", prId: "3-main", title: 'กลุ่มงานพักการลงโทษ', order: 7 },
-      { id: "8-sub", prId: "3-main", title: 'กลุ่มงานอภัยโทษ', order: 8 },
-    ],
-    skipDuplicates: true,
-  });
-
-  // ===============================
-  // 📢 Sub Group PR Practice Menu
-  // ===============================
-  await prisma.subGroupPRPracticeMenu.createMany({
-    data: [
-      { id: "3-group", subId: "2-sub", title: 'การเลื่อนชั้นนักโทษเด็ดขาด', order: 1 },
-      { id: "4-group", subId: "2-sub", title: 'ผู้ช่วยงานผู้ช่วยเหลือ', order: 2 },
-    ],
-    skipDuplicates: true,
-  });
-
-  // ======================
-  // LEGAL DOCUMENT
-  // ======================
-  await prisma.legalDocument.createMany({
-    data: [
-      { id: 'doc-1', title: 'กฎกระทรวงจำแนกฯ พ.ศ. 2563', type: 'image', categoryKey: '1-1' },
-      { id: 'doc-2', title: 'พ.ร.บ.ราชทัณฑ์ พ.ศ. 2560', type: 'pdf', categoryKey: '1-1' },
-    ]
-  });
-
-  // ======================
-  // INFOGRAPHICS
-  // ======================
-  const infographics = [
-    '/image1.png','/image2.png','/image3.jpg','/image4.png',
-    '/image5.jpg','/image6.png','/image7.png','/image8.jpg',
-    '/image9.jpg','/image10.png','/image11.png',
-    '/PR/ประชาสัมพันธ์เยี่ยมใกล้ชิด.jpg'
-  ];
-
-  await prisma.infographic.createMany({
-    data: infographics.map((path, i) => ({
-      id: `img-${i+1}`,
-      path
-    }))
   });
 
   // ======================

@@ -22,18 +22,15 @@ export class CreateContentDto {
   @IsString()
   mainId?: string;
 
-  @ApiProperty({ example: '9-sub', required: false })
-  @IsOptional()
-  @IsString()
-  subId?: string;
-
-  @ApiProperty({ example: '3-group', required: false })
-  @IsOptional()
-  @IsString()
-  groupId?: string;
-
   @ApiProperty({ example: '7-main/9-sub/3-group/file.pdf', required: false })
   @IsOptional()
   @IsString()
   file?: string;
+}
+
+export class UploadProfileImageDto {
+  @ApiProperty({ example: 'inmate' })
+  @IsNotEmpty()
+  @IsString()
+  userType: string;
 }

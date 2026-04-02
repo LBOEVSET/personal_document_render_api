@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../core/prisma/prisma.service';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class InmateService {
     return result;
   }
 
-  async getInmateProfileById(id: string) {
+  async getInmateProfileById(id: string, user: any) {
     const data =  await this.prisma.inmateProfile.findUnique({
       where: { id },
       include: {
@@ -41,6 +41,10 @@ export class InmateService {
         },
       },
     });
+
+    if(user.role !== 'ADMIN' && data?.userId !== user.id) {
+      throw new UnauthorizedException('You do not have access to this inmate profile');
+    }
 
     const result = {
       ...data,

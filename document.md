@@ -8,6 +8,11 @@ docker compose -f database/db.docker-compose.yml up -d
 npm install
 npm install --save-dev @types/multer
 
+npx prisma migrate reset
+npx prisma migrate dev --name migrate_db
+npx prisma generate
+npx prisma db seed
+
 npm run start
 
 -----------------------------------------------------------------------------------
@@ -188,7 +193,7 @@ GET /inmate/profile
 ### 🔐 Auth
 
 * Required: ✅
-* Role: Any
+* Role: Admin
 
 -----------------------------------------------------------------------------------
 
@@ -201,51 +206,7 @@ GET /inmate/profile/:id
 ### 🔐 Auth
 
 * Required: ✅
-* Role: Any
-
------------------------------------------------------------------------------------
-
-## 🔹 Get All Details
-
-```
-GET /inmate/detail
-```
-
-### 🔐 Auth
-
-* Required: ✅
-* Role: Any
-
------------------------------------------------------------------------------------
-
-## 🔹 Get Detail by ID
-
-```
-GET /inmate/detail/:id
-```
-
-### 🔐 Auth
-
-* Required: ✅
-* Role: Any
-
------------------------------------------------------------------------------------
-
-# 🛠 ADMIN INMATE APIs
-
-### 🔐 Auth
-
-* Required: ✅
-* Role: ADMIN
-
-Same endpoints as above:
-
-```
-GET /inmate/admin/profile
-GET /inmate/admin/profile/:id
-GET /inmate/admin/detail
-GET /inmate/admin/detail/:id
-```
+* Role: Any (Admin or Owner Id)
 
 -----------------------------------------------------------------------------------
 
@@ -275,40 +236,6 @@ GET /menu/legalCategories
 
 -----------------------------------------------------------------------------------
 
-## 🔹 Legal Sub Items
-
-```
-GET /menu/legalSubItem
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 Legal Group Items
-
-```
-GET /menu/legalGroupItem
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
-* subId: string
-
------------------------------------------------------------------------------------
-
 ## 🔹 PR Departments
 
 ```
@@ -321,154 +248,8 @@ GET /menu/prDepartments
 
 -----------------------------------------------------------------------------------
 
-## 🔹 PR Sub Items
-
-```
-GET /menu/prSubItem
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 PR Group Items
-
-```
-GET /menu/prGroupItem
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
-* subId: string
-
------------------------------------------------------------------------------------
-
-# 📂 MENU APIs (v2)
-
-Same as v1 but cleaner naming:
-
-```
-
-GET /menu/legalSubCategories
-
-GET /menu/legalGroupCategories
-
-GET /menu/prSubCategories
-
-GET /menu/prGroupCategories
-
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
------------------------------------------------------------------------------------
-
 # 🎬 MEDIA APIs (v1)
 
-## 🔹 Info Graphics
-
-```
-
-GET /media/infoGraphics
-
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
------------------------------------------------------------------------------------
-
-## 🔹 Legal Content
-
-```
-GET /media/legalContentItems
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 Standard Shelf
-
-```
-GET /media/getStandardShelfItems
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
------------------------------------------------------------------------------------
-
-## 🔹 Images
-
-```
-GET /media/shelfRow1Images
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 Videos
-
-```
-GET /media/shelfRow2Videos
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 PDFs
-
-```
-GET /media/shelfRow3PDFs
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* mainId: string
-
------------------------------------------------------------------------------------
-
 ## 🔹 Content List
 
 ```
@@ -482,76 +263,6 @@ GET /media/contentList
 ### 📌 Query
 
 * department: LEGAL | ANNOUNCEMENT
-
------------------------------------------------------------------------------------
-
-## 🔹 Content Registry
-
-```
-GET /media/contentRegistry
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
------------------------------------------------------------------------------------
-
-# 🎬 MEDIA APIs (v2)
-
-## 🔹 Content List
-
-```
-GET /media/contentList
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
------------------------------------------------------------------------------------
-
-## 🔹 Content By Layer
-
-```
-GET /media/contentListByLayer
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* department: LEGAL | ANNOUNCEMENT
-
-* mainId: string
-
-* subId: string
-
-* groupId: string
-
------------------------------------------------------------------------------------
-
-## 🔹 Strict Layer (No fallback)
-
-```
-GET /media/getContentBySensitiveLayer
-```
-
-### 🔐 Auth
-
-* Required: ❌
-
-### 📌 Query
-
-* department: LEGAL | ANNOUNCEMENT
-
-* mainId: string
-
-* subId: string
-
-* groupId: string
 
 -----------------------------------------------------------------------------------
 
@@ -684,6 +395,5 @@ Authorization: Bearer <token>
 * Menu → categories
 * Media → content display
 * Admin → upload + create content
-* Layer API → strict filtering (main/sub/group)
 
 -----------------------------------------------------------------------------------

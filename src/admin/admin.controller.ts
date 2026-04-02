@@ -1,14 +1,15 @@
-import { Controller, Body, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
+import { Controller, Body, Query, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminService, AdminUploadService } from './admin.service';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { CreateContentDto } from './dto/admin.dto';
+import { CreateContentDto, UploadProfileImageDto } from './dto/admin.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiBody,
+  ApiQuery,
   ApiBearerAuth,
   ApiConsumes,
   ApiResponse,
@@ -87,10 +88,10 @@ export class AdminController {
           type: 'string',
           format: 'binary',
         },
-        userType: { type: 'string', example: 'inmate' },
       },
     },
   })
+  @ApiQuery({ type: UploadProfileImageDto })
   @ApiResponse({
     status: 201,
     schema: {
@@ -104,13 +105,13 @@ export class AdminController {
   })
   async uploadProfileImage(
     @UploadedFile() file: Express.Multer.File,
-    @Body() body: any,
+    @Query() query: UploadProfileImageDto,
   ) {
     if (!file) {
       throw new BadRequestException('File is required');
     }
 
-    const userType = body.userType || 'default';
+    const userType = query.userType || 'default';
     const url = `/uploads/${userType}/${file.filename}`;
 
     return {
@@ -138,8 +139,6 @@ export class AdminController {
         },
         department: { type: 'string', example: 'LEGAL' },
         mainId: { type: 'string', example: '1-main' },
-        subId: { type: 'string', example: '1-sub' },
-        groupId: { type: 'string', example: '1-group' },
       },
     },
   })

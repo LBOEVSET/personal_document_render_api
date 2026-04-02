@@ -6,12 +6,6 @@ export class SubCategoriesDto {
   mainId!: string;
 }
 
-export class GroupCategoriesDto {
-  @IsNotEmpty()
-  @IsString()
-  subId!: string;
-}
-
 export class AllSubCategoriesDto {
   @IsNotEmpty()
   @IsString()
@@ -30,10 +24,6 @@ export class AllGroupCategoriesDto {
   @IsNotEmpty()
   @IsString()
   mainId!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  subId!: string;
 }
 
 export enum Department {
