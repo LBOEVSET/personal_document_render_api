@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../core/prisma/prisma.service';
-import { Department } from '@prisma/client';
+import { AllContentListDto, MediaSubCategoryDto } from './dto/media.dto';
 
 @Injectable()
 export class MediaService {
@@ -14,62 +14,7 @@ export class MediaService {
     });
   }
 
-  // async getAllPrSubMenus(dto) {
-  //   const subMenus = await this.prisma.subPRPracticeMenu.findMany({
-  //     where: {
-  //         ...(dto.prId && { prId: dto.prId }),
-  //       },
-  //     orderBy: { order: 'asc' },
-  //   });
-  //   const result = {};
-  //   for(const menu of subMenus){
-  //     const items = await this.prisma.contentItem.findMany({
-  //       where: {
-  //         prId: menu.prId,
-  //       },
-  //       orderBy: { id: 'asc' },
-  //     });
-
-  //     for(const item of items){
-  //       result[item.prId ?? 'default'] = items.map((item) => ({
-  //         id: item.id,
-  //         title: item.title,
-  //         link: item.link ?? null,
-  //         cover: item.cover ?? null,
-  //       }));
-  //     }
-  //   }
-
-  //   return result;
-  // }
-
-  // async getAllLegalDocuments() {
-  //   const docs = await this.prisma.legalDocument.findMany({
-  //     where: {
-
-  //     },
-  //   });
-
-  //   const grouped: Record<string, any[]> = {};
-
-  //   for (const doc of docs) {
-  //     const key = doc.categoryKey;
-
-  //     if (!grouped[key]) {
-  //       grouped[key] = [];
-  //     }
-
-  //     grouped[key].push({
-  //       id: doc.id,
-  //       title: doc.title,
-  //       type: doc.type,
-  //     });
-  //   }
-
-  //   return grouped;
-  // }
-
-  async getLegalContentItems(dto: any) {
+  async getLegalContentItems() {
     const items = await this.prisma.contentItem.findMany({
       where: {
         department: 'LEGAL',
@@ -92,7 +37,7 @@ export class MediaService {
       let mainKey: string | null = null;
 
       // =========================
-      // 🔥 PRIORITY: group → sub → main
+      // PRIORITY: group → sub → main
       // =========================
 
       if (item.legalGroup) {
@@ -152,7 +97,7 @@ export class MediaService {
     return result;
   }
 
-  async getStandardShelfItems(dto: any) {
+  async getStandardShelfItems(dto: MediaSubCategoryDto) {
     const whereBase = {
       ...(dto.mainId && dto.department == 'LEGAL' && { legalId: dto.mainId }),
       ...(dto.subId && dto.department == 'LEGAL' && { subLegalId: dto.subId }),
@@ -165,7 +110,7 @@ export class MediaService {
       ...(dto.department && { department: dto.department }),
     };
 
-    // 🔥 ยิง query พร้อมกัน (เร็วกว่า await ทีละอัน)
+    // ยิง query พร้อมกัน (เร็วกว่า await ทีละอัน)
     const items = await this.prisma.contentItem.findMany({
       where: {
         type: { in: ['IMAGE', 'VIDEO', 'PDF'] },
@@ -181,7 +126,7 @@ export class MediaService {
     }));
   }
 
-  async getShelfRow1Images(dto: any) {
+  async getShelfRow1Images(dto: MediaSubCategoryDto) {
     const items = await this.prisma.contentItem.findMany({
       where: {
         type: 'IMAGE',
@@ -207,7 +152,7 @@ export class MediaService {
     }));
   }
 
-  async getShelfRow2Videos(dto: any) {
+  async getShelfRow2Videos(dto: MediaSubCategoryDto) {
     const items = await this.prisma.contentItem.findMany({
       where: {
         type: 'VIDEO',
@@ -236,7 +181,7 @@ export class MediaService {
     }));
   }
 
-  async getShelfRow3PDFs(dto: any) {
+  async getShelfRow3PDFs(dto: MediaSubCategoryDto) {
     const items = await this.prisma.contentItem.findMany({
       where: {
         type: 'PDF',
@@ -263,7 +208,7 @@ export class MediaService {
     }));
   }
 
-  async getAllContentList(dto: any) {
+  async getAllContentList(dto: AllContentListDto) {
     const items = await this.prisma.contentItem.findMany({
       where: {
         ...(dto.department && { department: dto.department }),
@@ -286,7 +231,7 @@ export class MediaService {
       let mainKey: string | null = null;
 
       // =========================
-      // 🔥 PRIORITY: group → sub → main
+      // PRIORITY: group → sub → main
       // =========================
 
       if (item.legalGroup) {
@@ -406,7 +351,7 @@ export class MediaService {
       let key: string | null = null;
 
       // =========================
-      // 🔥 PRIORITY: group → sub → main
+      // PRIORITY: group → sub → main
       // =========================
 
       // GROUP
@@ -447,7 +392,7 @@ export class MediaService {
       }
 
       // =========================
-      // 🔥 map field
+      // map field
       // =========================
       let cover: string | undefined;
       let src: string | undefined;
@@ -483,7 +428,7 @@ export class MediaService {
       case 'PDF':
         return 'pdfs';
       default:
-        throw new Error(`Unknown type: ${type}`);
+        throw new BadRequestException(`Unknown type: ${type}`);
     }
   }
 }
@@ -494,7 +439,7 @@ export class MediaServiceV2 {
     private prisma: PrismaService,
   ) {}
 
-  async getAllContentList(dto: any) {
+  async getAllContentList(dto: MediaSubCategoryDto) {
     const items = await this.prisma.contentItem.findMany({
       where: {
         ...(dto.department && { department: dto.department }),
@@ -526,7 +471,7 @@ export class MediaServiceV2 {
       let groupId: string | null = null;
 
       // =========================
-      // 🔥 resolve hierarchy
+      // resolve hierarchy
       // =========================
 
       if (item.legalGroup) {
@@ -562,7 +507,7 @@ export class MediaServiceV2 {
       if (!mainId) continue;
 
       // =========================
-      // 🔥 init main
+      // init main
       // =========================
       if (!result[mainId]) {
         result[mainId] = { document: [] };
@@ -571,7 +516,7 @@ export class MediaServiceV2 {
       let target = result[mainId];
 
       // =========================
-      // 🔥 sub layer
+      // sub layer
       // =========================
       if (subId) {
         if (!target[subId]) {
@@ -581,7 +526,7 @@ export class MediaServiceV2 {
       }
 
       // =========================
-      // 🔥 group layer
+      // group layer
       // =========================
       if (groupId) {
         if (!target[groupId]) {
@@ -591,7 +536,7 @@ export class MediaServiceV2 {
       }
 
       // =========================
-      // 🔥 map type
+      // map type
       // =========================
       let type: 'gallery' | 'vdo' | 'pdf';
 
@@ -619,7 +564,7 @@ export class MediaServiceV2 {
       };
 
       // =========================
-      // 🔥 push data
+      // push data
       // =========================
       if (Array.isArray(target)) {
         target.push(mapped);
@@ -631,14 +576,9 @@ export class MediaServiceV2 {
     return result;
   }
 
-  async getContentByLayer(dto: {
-    department: 'LEGAL' | 'PR';
-    mainId?: string;
-    subId?: string;
-    groupId?: string;
-  }) {
+  async getContentByLayer(dto: MediaSubCategoryDto) {
     if (!dto.mainId) {
-      throw new Error('mainId is required');
+      throw new BadRequestException('mainId is required');
     }
 
     const where: any = {
@@ -664,7 +604,7 @@ export class MediaServiceV2 {
         where.prId = dto.mainId;
       }
     } else {
-      throw new Error('At least mainId is required');
+      throw new BadRequestException('At least mainId is required');
     }
 
     const items = await this.prisma.contentItem.findMany({
@@ -709,7 +649,7 @@ export class MediaServiceV2 {
     }).filter(Boolean);
 
     // =========================
-    // 🔥 response key
+    // response key
     // =========================
     let key = dto.mainId;
 
@@ -721,20 +661,15 @@ export class MediaServiceV2 {
     };
   }
 
-  async getContentBySensitiveLayer(dto: {
-    department: 'LEGAL' | 'PR';
-    mainId?: string;
-    subId?: string;
-    groupId?: string;
-  }) {
+  async getContentBySensitiveLayer(dto: MediaSubCategoryDto) {
     if (!dto.mainId) {
-      throw new Error('mainId is required');
+      throw new BadRequestException('mainId is required');
     }
 
     const isLegal = dto.department === 'LEGAL';
 
     // =========================
-    // 🔥 BUILD WHERE (STRICT LAYER)
+    // BUILD WHERE (STRICT LAYER)
     // =========================
     const where: any = {
       ...(dto.department && { department: dto.department }),
@@ -772,7 +707,7 @@ export class MediaServiceV2 {
     }
 
     // =========================
-    // 🔥 QUERY
+    // QUERY
     // =========================
     const items = await this.prisma.contentItem.findMany({
       where,
@@ -780,7 +715,7 @@ export class MediaServiceV2 {
     });
 
     // =========================
-    // 🔥 MAP RESULT
+    // MAP RESULT
     // =========================
     const result = items
       .map((item) => {
@@ -812,7 +747,7 @@ export class MediaServiceV2 {
       .filter(Boolean);
 
     // =========================
-    // 🔥 RESPONSE KEY
+    // RESPONSE KEY
     // =========================
     let key = dto.mainId;
 
@@ -884,7 +819,7 @@ export class MediaServiceV2 {
       let key: string | null = null;
 
       // =========================
-      // 🔥 PRIORITY: group → sub → main
+      // PRIORITY: group → sub → main
       // =========================
 
       // GROUP
@@ -925,7 +860,7 @@ export class MediaServiceV2 {
       }
 
       // =========================
-      // 🔥 map field
+      // map field
       // =========================
       let cover: string | undefined;
       let src: string | undefined;
@@ -961,7 +896,7 @@ export class MediaServiceV2 {
       case 'PDF':
         return 'pdfs';
       default:
-        throw new Error(`Unknown type: ${type}`);
+        throw new BadRequestException(`Unknown type: ${type}`);
     }
   }
 }

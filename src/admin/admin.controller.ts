@@ -1,11 +1,21 @@
-import { Controller, Body, Post, UseGuards, UseInterceptors, UploadedFile  } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminService, AdminUploadService } from './admin.service';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { CreateContentDto } from './dto/admin.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBody,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Admin')
+@ApiBearerAuth()
 @Public()
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller({
@@ -18,29 +28,94 @@ export class AdminController {
   ) {}
 
   @Post('add/document')
-  create(@Body() dto: CreateContentDto) {
-    return this.service.createContent(dto);
+  @ApiOperation({ summary: 'Add document' })
+  @ApiBody({ type: CreateContentDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Add document',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'Document added successfully',
+        data: {}
+      },
+    },
+  })
+  async create(@Body() dto: CreateContentDto) {
+    const result = await this.service.createContent(dto);
+    return {
+      statusCode: 201,
+      message: 'Document added successfully',
+      data: result
+    };
   }
 
   @Post('add/multiple')
-  createMany(@Body() dtos: CreateContentDto[]) {
-    return this.service.createManyContents(dtos);
+  @ApiOperation({ summary: 'Add multiple documents' })
+  @ApiBody({ type: [CreateContentDto] })
+  @ApiResponse({
+    status: 201,
+    description: 'Add multiple documents',
+    schema: {
+      example: {
+        statusCode: 201,
+        message: 'Documents added successfully',
+        data: {}
+      },
+    },
+  })
+  async createMany(@Body() dtos: CreateContentDto[]) {
+    const result = await this.service.createManyContents(dtos);
+    return {
+      statusCode: 201,
+      message: 'Documents added successfully',
+      data: result
+    };
   }
 
   @Post('upload/profileImage')
   @UseInterceptors(
     FileInterceptor('file', new AdminUploadService().getProfileImageConfig()),
   )
-  async uploadProfileImage(@UploadedFile() file: Express.Multer.File) {
+  @ApiOperation({ summary: 'Upload document (image/video/pdf)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        userType: { type: 'string', example: 'inmate' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: {
+        statusCode: 201,
+        data: {
+          url: '/inmate/xxx.pdf',
+        },
+      },
+    },
+  })
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: any,
+  ) {
     if (!file) {
-      throw new Error('File is required');
+      throw new BadRequestException('File is required');
     }
 
-    const url = `/uploads/inmate/${file.filename}`;
+    const userType = body.userType || 'default';
+    const url = `/uploads/${userType}/${file.filename}`;
 
     return {
       statusCode: 201,
-      message: 'Upload success',
+      message: 'Profile image uploaded successfully',
       data: {
         url,
       },
@@ -51,10 +126,41 @@ export class AdminController {
   @UseInterceptors(FileInterceptor('file', {
     storage: new AdminUploadService().dynamicStorage(),
   }))
+  @ApiOperation({ summary: 'Upload document (image/video/pdf)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        department: { type: 'string', example: 'LEGAL' },
+        mainId: { type: 'string', example: '1-main' },
+        subId: { type: 'string', example: '1-sub' },
+        groupId: { type: 'string', example: '1-group' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    schema: {
+      example: {
+        statusCode: 201,
+        data: {
+          url: '/legal/1-main/1-sub/1-group/xxx.pdf',
+        },
+      },
+    },
+  })
   uploadFile(
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (!file) throw new Error('File required');
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
     const allowedMimeTypes = [
       'image/jpeg',
       'image/png',
@@ -63,13 +169,14 @@ export class AdminController {
     ];
 
     if (!allowedMimeTypes.includes(file.mimetype.toLowerCase())) {
-      throw new Error('Only image/video/pdf allowed');
+      throw new BadRequestException('Only image/video/pdf allowed');
     }
 
     const cleanPath = file.path.replace('uploads', '');
 
     return {
       statusCode: 201,
+      message: 'Document uploaded successfully',
       data: {
         url: cleanPath.replace(/\\/g, '/'),
       },

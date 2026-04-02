@@ -4,6 +4,7 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { requestIdMiddleware } from './common/middleware/request-id.middleware';
 import { RequestContextService } from './common/middleware/request-context.service';
 import { LoggingInterceptor } from './core/logger/logging.interceptor';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
@@ -48,6 +49,16 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('Prison API')
+    .setDescription('API Documentation')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('docs', app, document);
 
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
   console.log(`Application is running on port: ${process.env.PORT || 3000}`);

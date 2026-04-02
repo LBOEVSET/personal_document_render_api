@@ -1,15 +1,11 @@
 import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../core/prisma/prisma.service';
-import { RefreshTokenDto } from './dto/login.dto';
+import { RefreshTokenDto, LogOutDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserRole } from '@prisma/client';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 @Injectable()
 export class AuthService {
@@ -99,7 +95,7 @@ export class AuthService {
     return { refreshToken: tokens.refreshToken };
   }
 
-  async logout(dto: RefreshTokenDto) {
+  async logout(dto: LogOutDto) {
     const { username } = dto;
     const user = await this.prisma.user.findUnique({ where: { username } });
     if (!user) throw new UnauthorizedException();

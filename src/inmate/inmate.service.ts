@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-
-import { InjectRepository } from '@nestjs/typeorm';
 import { PrismaService } from '../core/prisma/prisma.service';
-import { map } from 'rxjs';
 
 @Injectable()
 export class InmateService {

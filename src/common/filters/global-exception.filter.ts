@@ -5,20 +5,20 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { LoggerService } from 'src/core/logger/logger.service';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  constructor(
-    private readonly logger: LoggerService
-  ) {}
+  constructor(private readonly logger: LoggerService) {}
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
+    const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
+    let message: string | string[] = 'Internal server error';
     let errors: any = null;
 
     if (exception instanceof HttpException) {
@@ -29,17 +29,30 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object') {
         const res: any = exceptionResponse;
+
         message = res.message || message;
+
         errors = res.errors || null;
       }
+    } 
+    else if (exception instanceof Error) {
+      message = exception.message;
     }
-    
-    this.logger.error(exception, ctx.getRequest<Request>().url);
+
+    this.logger.error(
+      {
+        message: exception instanceof Error ? exception.message : exception,
+        stack: exception instanceof Error ? exception.stack : null,
+      },
+      request.url,
+    );
 
     response.status(status).json({
       success: false,
+      statusCode: status,
       message,
       errors,
+      path: request.url,
       timestamp: new Date().toISOString(),
     });
   }

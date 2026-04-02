@@ -23,7 +23,7 @@ export class PrismaService
       log: ['error', 'warn'],
     });
 
-    // 🔥 IMPORTANT: assign extension back
+    // IMPORTANT: assign extension back
     Object.assign(
       this,
       this.$extends({

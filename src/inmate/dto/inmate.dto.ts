@@ -1,24 +1,76 @@
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+
 export class InmateDetailDto {
-  age: string;
-  nationality: string;
-  religion: string;
-  holdType: string;
-  holdAgency: string;
+  @IsNotEmpty()
+  @IsString()
+  age!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  nationality!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  religion!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  holdType!: string;
+
+  @IsOptional()
+  @IsString()
+  holdAgency?: string;
 }
 
 export class InmateProfileDto {
-  id: string;
-  name: string;
-  status: string;
-  daysLeft: number;
-  totalDays: number;
-  cases: number;
-  caseType: string;
-  sentence: string;
-  startDate: string;
-  transferFrom: string;
-  releaseDate: string;
-  progressStep: number;
+  @IsNotEmpty()
+  @IsString()
+  id!: string;
 
-  detail: InmateDetailDto;
+  @IsNotEmpty()
+  @IsString()
+  name!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  status!: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  daysLeft!: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  totalDays!: number;
+  
+  @IsNotEmpty()
+  @IsNumber()
+  cases!: number;
+
+  @IsNotEmpty()
+  @IsString()
+  caseType!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  sentence!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  startDate!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  transferFrom!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  releaseDate!: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  progressStep!: number;
+
+  @IsNotEmpty()
+  detail!: InmateDetailDto;
 }

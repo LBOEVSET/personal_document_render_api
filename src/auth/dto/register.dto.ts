@@ -1,7 +1,6 @@
 import { IsNumber, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
-
   @IsNotEmpty()
   @IsString()
   username!: string;
@@ -24,63 +23,81 @@ export class RegisterDto {
 }
 
 export class CreateInmateDetailDto {
+  @IsNotEmpty()
   @IsString()
-  age: string;
+  age!: string;
 
+  @IsNotEmpty()
   @IsString()
-  nationality: string;
+  nationality!: string;
 
+  @IsNotEmpty()
   @IsString()
-  religion: string;
+  religion!: string;
 
+  @IsNotEmpty()
   @IsString()
-  holdType: string;
+  holdType!: string;
 
+  @IsOptional()
   @IsString()
-  holdAgency: string;
+  holdAgency?: string;
 }
 
 export class RegisterInmateDto {
+  @IsNotEmpty()
   @IsString()
-  id: string;
+  id!: string;
 
+  @IsNotEmpty()
   @IsString()
-  name: string;
+  name!: string;
 
   @IsNotEmpty()
   @MinLength(6)
   password!: string;
 
+  @IsNotEmpty()
   @IsString()
-  status: string;
+  status!: string;
 
+  @IsNotEmpty()
   @IsNumber()
-  daysLeft: number;
+  daysLeft!: number;
 
+  @IsNotEmpty()
   @IsNumber()
-  totalDays: number;
+  totalDays!: number;
 
+  @IsNotEmpty()
   @IsNumber()
-  cases: number;
+  cases!: number;
 
+  @IsNotEmpty()
   @IsString()
-  caseType: string;
+  caseType!: string;
 
+  @IsNotEmpty()
   @IsString()
-  sentence: string;
+  sentence!: string;
 
+  @IsNotEmpty()
   @IsString()
-  startDate: string;
+  startDate!: string;
 
+  @IsNotEmpty()
   @IsString()
-  transferFrom: string;
+  transferFrom!: string;
 
+  @IsNotEmpty()
   @IsString()
-  releaseDate: string;
+  releaseDate!: string;
 
+  @IsNotEmpty()
   @IsNumber()
-  progressStep: number;
+  progressStep!: number;
 
+  @IsOptional()
   @IsString()
   profileImage?: string;
 

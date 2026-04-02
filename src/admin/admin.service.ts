@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../core/prisma/prisma.service';
 import { CreateContentDto } from './dto/admin.dto';
 import { diskStorage } from 'multer';
@@ -77,7 +77,7 @@ export class AdminService {
       ...(sample.department && { department: sample.department }),
     };
 
-    // 🔥 หา latest แค่ครั้งเดียว
+    // หา latest แค่ครั้งเดียว
     const latestItem = await this.prisma.contentItem.findFirst({
       where: {
         type: sample.type,
@@ -86,7 +86,7 @@ export class AdminService {
       orderBy: { id: 'desc' },
     });
 
-    // 🔥 extract number ตั้งต้น
+    // extract number ตั้งต้น
     const prefixMap = {
       IMAGE: 'img',
       VIDEO: 'v',
@@ -102,7 +102,7 @@ export class AdminService {
       startNumber = match ? parseInt(match[0], 10) : 0;
     }
 
-    // 🔥 generate id ต่อเนื่อง
+    // generate id ต่อเนื่อง
     const data = dtos.map((dto, index) => {
       const newId = `${prefix}-${startNumber + index + 1}`;
 
@@ -142,9 +142,8 @@ export class AdminService {
     if (dto.subId) segments.push(dto.subId);
     if (dto.groupId) segments.push(dto.groupId);
 
-    // 🔥 MUST HAVE FILE
     if (!dto.file) {
-      throw new Error('file is required (upload first)');
+      throw new BadRequestException('File is required (upload first)');
     }
 
     let link = '';
@@ -248,7 +247,15 @@ export class AdminUploadService {
   getProfileImageConfig() {
     return {
       storage: diskStorage({
-        destination: './uploads/inmate', // 📁 folder
+        destination: (req, file, cb) => {
+          const userType = req.body.userType || 'default';
+
+          const folder = `./uploads/${userType}`;
+
+          fs.mkdirSync(folder, { recursive: true });
+
+          cb(null, folder);
+        },
         filename: (req, file, cb) => {
           const uniqueName =
             Date.now() + '-' + Math.round(Math.random() * 1e9);

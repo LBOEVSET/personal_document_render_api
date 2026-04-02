@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../core/prisma/prisma.service';
+import { GroupCategoriesDto, AllGroupCategoriesDto, SubCategoriesDto, AllSubCategoriesDto } from './dto/menu.dto';
 
 @Injectable()
 export class MenuService {
@@ -25,7 +26,7 @@ export class MenuService {
     });
   }
 
-  async getAllPrSubItem(dto: any) {
+  async getAllPrSubItem(dto: AllSubCategoriesDto) {
     const subMenus = await this.prisma.subPRPracticeMenu.findMany({
       where: {
         ...(dto.mainId && { prId: dto.mainId }),
@@ -42,7 +43,7 @@ export class MenuService {
 
     const result: Record<string, any[]> = {};
 
-    // 🔥 ใช้ Map กัน duplicate
+    // ใช้ Map กัน duplicate
     const map: Record<string, Map<string, any>> = {};
 
     for (const item of items) {
@@ -52,7 +53,7 @@ export class MenuService {
         map[item.subPrId] = new Map();
       }
 
-      // 🔥 กัน id ซ้ำ
+      // กัน id ซ้ำ
       if (!map[item.subPrId].has(item.id)) {
         map[item.subPrId].set(item.id, {
           id: item.id,
@@ -63,7 +64,7 @@ export class MenuService {
       }
     }
 
-    // 🔥 map → array ตาม menu
+    // map → array ตาม menu
     for (const menu of subMenus) {
       result[menu.id] = map[menu.id]
         ? Array.from(map[menu.id].values())
@@ -73,37 +74,37 @@ export class MenuService {
     return result;
   }
 
-  async getAllPrGroupItems(dto: any) {
-    if (!dto.prId || !dto.subPrId) {
-      throw new Error('prId and subPrId are required');
+  async getAllPrGroupItems(dto: AllGroupCategoriesDto) {
+    if (!dto.mainId || !dto.subId) {
+      throw new BadRequestException('mainId and subId are required');
     }
 
     // =========================
-    // 🔥 GET GROUP MENUS
+    // GET GROUP MENUS
     // =========================
     const groupMenus = await this.prisma.subGroupPRPracticeMenu.findMany({
       where: {
-        subId: dto.subPrId,
+        subId: dto.subId,
       },
       orderBy: { order: 'asc' },
     });
 
     // =========================
-    // 🔥 GET CONTENT ITEMS (STRICT SCOPE)
+    // GET CONTENT ITEMS (STRICT SCOPE)
     // =========================
     const items = await this.prisma.contentItem.findMany({
       where: {
         ...(dto.department && { department: dto.department }),
 
-        prId: dto.prId,
-        subPrId: dto.subPrId,
+        prId: dto.mainId,
+        subPrId: dto.subId,
 
-        // ❗ ไม่ filter group → เอาทุก group ใน sub นี้
+        // ไม่ filter group → เอาทุก group ใน sub นี้
       },
     });
 
     // =========================
-    // 🔥 GROUP + DEDUP
+    // GROUP + DEDUP
     // =========================
     const result: Record<string, any[]> = {};
     const map: Record<string, Map<string, any>> = {};
@@ -126,7 +127,7 @@ export class MenuService {
     }
 
     // =========================
-    // 🔥 MAP RESULT ตาม MENU ORDER
+    // MAP RESULT ตาม MENU ORDER
     // =========================
     for (const menu of groupMenus) {
       result[menu.id] = map[menu.id]
@@ -137,7 +138,7 @@ export class MenuService {
     return result;
   }
 
-  async getAllLegalSubCategoriesItem(dto: any) {
+  async getAllLegalSubCategoriesItem(dto: AllSubCategoriesDto) {
     const subMenus = await this.prisma.subLegalMenu.findMany({
       where: {
         ...(dto.mainId && { legalId: dto.mainId }),
@@ -147,7 +148,7 @@ export class MenuService {
 
     const items = await this.prisma.contentItem.findMany({
       where: {
-        ...(dto.mainId && { legalId: dto.mainId }), // ✅ FIX
+        ...(dto.mainId && { legalId: dto.mainId }),
         ...(dto.department && { department: dto.department }),
       },
     });
@@ -181,13 +182,13 @@ export class MenuService {
     return result;
   }
 
-  async getAllLegalGroupCategoriesItem(dto: any) {
+  async getAllLegalGroupCategoriesItem(dto: AllGroupCategoriesDto) {
     if (!dto.mainId || !dto.subId) {
-      throw new Error('mainId and subId are required');
+      throw new BadRequestException('mainId and subId are required');
     }
 
     // =========================
-    // 🔥 GET GROUP MENUS
+    // GET GROUP MENUS
     // =========================
     const groupMenus = await this.prisma.subGroupLegalMenu.findMany({
       where: {
@@ -197,7 +198,7 @@ export class MenuService {
     });
 
     // =========================
-    // 🔥 GET CONTENT ITEMS (STRICT GROUP SCOPE)
+    // GET CONTENT ITEMS (STRICT GROUP SCOPE)
     // =========================
     const items = await this.prisma.contentItem.findMany({
       where: {
@@ -206,12 +207,12 @@ export class MenuService {
         legalId: dto.mainId,
         subLegalId: dto.subId,
 
-        // ❗ ไม่ filter groupId → เอาทุก group ใน sub นี้
+        // ไม่ filter groupId → เอาทุก group ใน sub นี้
       },
     });
 
     // =========================
-    // 🔥 GROUP + DEDUP
+    // GROUP + DEDUP
     // =========================
     const result: Record<string, any[]> = {};
     const map: Record<string, Map<string, any>> = {};
@@ -223,7 +224,7 @@ export class MenuService {
         map[item.legalGroupId] = new Map();
       }
 
-      // 🔥 กัน duplicate
+      // กัน duplicate
       if (!map[item.legalGroupId].has(item.id)) {
         map[item.legalGroupId].set(item.id, {
           id: item.id,
@@ -235,7 +236,7 @@ export class MenuService {
     }
 
     // =========================
-    // 🔥 MAP RESULT ตาม MENU ORDER
+    // MAP RESULT ตาม MENU ORDER
     // =========================
     for (const menu of groupMenus) {
       result[menu.id] = map[menu.id]
@@ -271,7 +272,7 @@ export class MenuServiceV2 {
     });
   }
 
-  async getAllPrSubCategories(dto: any) {
+  async getAllPrSubCategories(dto: SubCategoriesDto) {
     const subMenus = await this.prisma.subPRPracticeMenu.findMany({
       where: {
         ...(dto.mainId && { prId: dto.mainId }),
@@ -301,9 +302,11 @@ export class MenuServiceV2 {
     return subMenus;
   }
 
-  async getAllPrGroupCategories(dto: any) {
+  async getAllPrGroupCategories(dto: GroupCategoriesDto) {
     if (!dto.subId) {
-      throw new Error('subId is required');
+      console.log('BEFORE THROW ERROR');
+      console.log(dto);
+      throw new BadRequestException('subId is required');
     }
 
     const groupItems = await this.prisma.subGroupPRPracticeMenu.findMany({
@@ -327,7 +330,7 @@ export class MenuServiceV2 {
     return groupItems;
   }
 
-  async getAllLegalSubCategories(dto: any) {
+  async getAllLegalSubCategories(dto: SubCategoriesDto) {
     const subMenus = await this.prisma.subLegalMenu.findMany({
       where: {
         ...(dto.mainId && { legalId: dto.mainId }),
@@ -357,11 +360,10 @@ export class MenuServiceV2 {
     return subMenus;
   }
 
-  async getAllLegalGroupCategories(dto: any) {
+  async getAllLegalGroupCategories(dto: GroupCategoriesDto) {
     if (!dto.subId) {
-      throw new Error('subId is required');
+      throw new BadRequestException('subId is required');
     }
-
     const groupItems = await this.prisma.subGroupLegalMenu.findMany({
       where: {
         subId: dto.subId,

@@ -11,7 +11,7 @@ const prisma = new PrismaClient({
 });
 
 function mapRelationFromPath(item: any) {
-  // 🔥 ใช้ file ก่อน เพราะมี structure จริง
+  // ใช้ file ก่อน เพราะมี structure จริง
   const path = item.file || item.link || "";
 
   const segments = path.split('/').filter(Boolean);
