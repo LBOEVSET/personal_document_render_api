@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../core/prisma/prisma.service';
 
 @Injectable()
@@ -23,6 +23,14 @@ export class InmateService {
     const result = data.map((item) => ({
       ...item,
       profileImage: item.user?.profileImage ?? "/uploads/inmate/default.jpg",
+      totalDays: this.calculateDays(
+        item.startDate,
+        item.releaseDate,
+      ).totalDays,
+      daysLeft: this.calculateDays(
+        item.startDate,
+        item.releaseDate,
+      ).daysLeft,
       user: undefined,
     }));
 
@@ -46,61 +54,35 @@ export class InmateService {
       throw new UnauthorizedException('You do not have access to this inmate profile');
     }
 
+    if(!data){
+      throw new NotFoundException('Inmate profile not found');
+    }
+
+    const { totalDays, daysLeft } = this.calculateDays(
+      data!.startDate,
+      data!.releaseDate,
+    );
+
     const result = {
       ...data,
       profileImage: data?.user?.profileImage ?? "/uploads/inmate/default.jpg",
+      totalDays,
+      daysLeft,
       user: undefined,
     }
 
     return result;
   }
 
-  async getAllInmateDetails() {
-    const data = await this.prisma.inmateDetail.findMany({
-      orderBy: { id: 'desc' },
-      include: {
-        inmate: {
-          include: {
-            user: {
-              select: {
-                profileImage: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    const result = data.map((item) => ({
-      ...item,
-      profileImage: item.inmate?.user?.profileImage ?? "/uploads/inmate/default.jpg",
-      inmate: undefined,
-    }));
+  calculateDays(startDate: Date, releaseDate: Date) {
+    const now = new Date();
 
-    return result;
-  }
+    const totalMs = releaseDate.getTime() - startDate.getTime();
+    const leftMs = releaseDate.getTime() - now.getTime();
 
-  async getInmateDetailById(id: string) {
-    const data = await this.prisma.inmateDetail.findUnique({
-      where: { id },
-      include: {
-        inmate: {
-          include: {
-            user: {
-              select: {
-                profileImage: true,
-              },
-            },
-          },
-        },
-      },
-    });
+    const totalDays = Math.max(0, Math.ceil(totalMs / (1000 * 60 * 60 * 24)));
+    const daysLeft = Math.max(0, Math.ceil(leftMs / (1000 * 60 * 60 * 24)));
 
-    const result = {
-      ...data,
-      profileImage: data?.inmate?.user?.profileImage ?? "/uploads/inmate/default.jpg",
-      inmate: undefined,
-    };
-
-    return result;
+    return { totalDays, daysLeft };
   }
 }

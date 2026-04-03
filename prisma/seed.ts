@@ -210,14 +210,12 @@ async function main() {
       userId: (await prisma.user.findFirst({ where: { username: "6870601174" } }))?.id || '',
       name: "ดาลิกา พงศ์อนันตโชติ",
       status: "ชั้นดีมาก",
-      daysLeft: 627,
-      totalDays: 1102,
       cases: 1,
       caseType: "เสพและมีเมทแอมเฟตามีนไว้ในครอบครองเพื่อจำหน่าย",
       sentence: "3 ปี 0 เดือน 7 วัน",
-      startDate: "29 ธันวาคม 2568",
+      startDate: new Date("2025-12-29T00:00:00.000Z"),
       transferFrom: "-",
-      releaseDate: "21 พฤศจิกายน 2570",
+      releaseDate: new Date("2027-11-21T00:00:00.000Z"),
       progressStep: 4,
       detail: {
         create: {

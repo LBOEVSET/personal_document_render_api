@@ -63,14 +63,6 @@ export class RegisterInmateDto {
 
   @IsNotEmpty()
   @IsNumber()
-  daysLeft!: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  totalDays!: number;
-
-  @IsNotEmpty()
-  @IsNumber()
   cases!: number;
 
   @IsNotEmpty()

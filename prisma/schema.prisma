@@ -78,14 +78,12 @@ model InmateProfile {
   userId       String @unique
   name         String
   status       String
-  daysLeft     Int
-  totalDays    Int
   cases        Int
   caseType     String
   sentence     String
-  startDate    String
+  startDate    DateTime
   transferFrom String
-  releaseDate  String
+  releaseDate  DateTime
   progressStep Int
 
   user User @relation(fields: [userId], references: [id])

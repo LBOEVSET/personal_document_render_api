@@ -168,14 +168,12 @@ export class AuthService {
         id: dto.id,
         name: dto.name,
         status: dto.status,
-        daysLeft: dto.daysLeft,
-        totalDays: dto.totalDays,
         cases: dto.cases,
         caseType: dto.caseType,
         sentence: dto.sentence,
-        startDate: dto.startDate,
+        startDate: new Date(dto.startDate),
         transferFrom: dto.transferFrom,
-        releaseDate: dto.releaseDate,
+        releaseDate: new Date(dto.releaseDate),
         progressStep: dto.progressStep,
 
         user: {

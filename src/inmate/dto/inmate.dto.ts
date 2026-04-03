@@ -34,14 +34,6 @@ export class InmateProfileDto {
   @IsNotEmpty()
   @IsString()
   status!: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  daysLeft!: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  totalDays!: number;
   
   @IsNotEmpty()
   @IsNumber()
