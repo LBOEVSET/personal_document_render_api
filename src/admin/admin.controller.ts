@@ -1,4 +1,4 @@
-import { Controller, Delete, Param, Body, Query, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
+import { Controller, Delete, Param, Body, Put, Query, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminService, AdminUploadService } from './admin.service';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -13,6 +13,7 @@ import {
   ApiBearerAuth,
   ApiConsumes,
   ApiResponse,
+  ApiParam,
 } from '@nestjs/swagger';
 
 @ApiTags('Admin')
@@ -199,6 +200,53 @@ export class AdminController {
     return {
       statusCode: 200,
       message: 'Document deleted successfully',
+    };
+  }
+
+  @Put('update/inmate/:id')
+  @ApiOperation({ summary: 'Update inmate profile' })
+  @ApiParam({ name: 'id', example: '6870601174' })
+  @ApiBody({
+    schema: {
+      example: {
+        name: 'John Doe',
+        status: 'IN_PRISON',
+        daysLeft: 120,
+        totalDays: 365,
+        cases: 2,
+        caseType: 'Criminal',
+        sentence: '2 years',
+        startDate: '2024-01-01',
+        releaseDate: '2026-01-01',
+        transferFrom: 'Bangkok Prison',
+        profileImage: '/uploads/inmate/xxx.jpg',
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        statusCode: 200,
+        message: 'Inmate updated successfully',
+        data: {},
+      },
+    },
+  })
+  async updateInmate(
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    const dto = {
+      id,
+      ...body,
+    };
+    const result = await this.service.upsertInmateData(dto);
+
+    return {
+      statusCode: 200,
+      message: 'Inmate updated successfully',
+      data: result,
     };
   }
 
