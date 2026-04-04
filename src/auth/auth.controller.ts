@@ -26,6 +26,18 @@ import {FileInterceptor} from '@nestjs/platform-express';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Post('login/fingerprint')
+  @Public()
+  async loginWithFingerprint(@Body() body: { userId: string }) {
+    const result = await this.authService.loginWithFingerprint(body.userId);
+
+    return {
+      statusCode: 200,
+      message: 'Login success',
+      data: result,
+    };
+  }
+
   @UseGuards(RolesGuard)
   @Post('register/inmate')
   @ApiOperation({ summary: 'Register inmate' })

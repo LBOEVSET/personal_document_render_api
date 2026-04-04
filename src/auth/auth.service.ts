@@ -40,6 +40,34 @@ export class AuthService {
     return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
   }
 
+  async loginWithFingerprint(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        inmateProfile: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Fingerprint not recognized');
+    }
+
+    const tokens = await this.generateTokens(user.username);
+
+    const hashedAccessToken = await bcrypt.hash(tokens.accessToken, 10);
+    const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { 
+        accessToken: hashedAccessToken,
+        refreshToken: hashedRefreshToken 
+      },
+    });
+    
+    return { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+  }
+
   async loginInmate(dto: LoginInmateDto) {
     const { userId, password } = dto;
     const user = await this.prisma.user.findUnique({ where: { id: userId } });

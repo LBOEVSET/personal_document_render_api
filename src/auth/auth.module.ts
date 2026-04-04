@@ -9,7 +9,9 @@ import { RequestContextService } from 'src/common/middleware/request-context.ser
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     JwtModule.register({}),
   ],
   controllers: [AuthController],
