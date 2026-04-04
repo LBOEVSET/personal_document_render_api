@@ -204,6 +204,19 @@ async function main() {
       status: 1
     }
   });
+  await prisma.user.create({
+    data: {
+      id: "6462cba0-1993-42b0-9d93-c8498640a9c4",
+      username: "1100801249284",
+      passwordHash: "$2b$10$QSahEDNmYtl33UhuWqLV1uq2rg6N.QNZq490OjEeLEgQAp9Wu31gS", // hash ของ "20011966"
+      accessToken: "$2b$10$8Jen.1HRS7CK6u.XH7Dxt.0kvQtuZkYuQkjqebHdxkWPYTsx/N3MC",
+      refreshToken: "$2b$10$sHtaV6kk2Sn7ku6lFpFS4./JR9pcHhm1ae6LDx4FasLLUOUrlEN5G",
+      role: 'ADMIN',
+      name: "Sorawich Tantijitjaru",
+      profileImage: null,
+      status: 1
+    }
+  });
   await prisma.inmateProfile.create({
     data: {
       id: "6870601174",

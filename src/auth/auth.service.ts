@@ -18,7 +18,14 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const { username, password } = dto;
-    const user = await this.prisma.user.findUnique({ where: { username: username } });
+
+    const user = await this.prisma.user.findUnique({
+      where: { username },
+      include: {
+        inmateProfile: true, // ✅ ให้เหมือน fingerprint
+      },
+    });
+
     if (!user) throw new UnauthorizedException();
 
     const valid = await bcrypt.compare(password, user.passwordHash);
@@ -31,13 +38,18 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { 
+      data: {
         accessToken: hashedAccessToken,
-        refreshToken: hashedRefreshToken 
+        refreshToken: hashedRefreshToken,
       },
     });
-    
-    return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+
+    // ✅ สำคัญ: return user ด้วย
+    return {
+      user,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
   async loginWithFingerprint(userId: string) {
@@ -59,13 +71,18 @@ export class AuthService {
 
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { 
+      data: {
         accessToken: hashedAccessToken,
-        refreshToken: hashedRefreshToken 
+        refreshToken: hashedRefreshToken,
       },
     });
-    
-    return { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+
+    // ✅ format เดียวกัน
+    return {
+      user,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    };
   }
 
   async loginInmate(dto: LoginInmateDto) {
@@ -191,41 +208,82 @@ export class AuthService {
 
   async verifyRegisterInmate(dto: VerifyRegisterInmateUserDto) {
     const exists = await this.prisma.inmateProfile.findFirst({
-      where: { 
+      where: {
         OR: [
           { id: dto.id },
           { name: dto.name },
         ],
-      }
-    })
-    console.log(dto);
-    console.log('exists user');
-    console.log(exists);
+      },
+    });
 
-    if(!exists){
+    if (!exists) {
       throw new NotFoundException('Inmate profile not found');
     }
 
-    const passwordHash = await bcrypt.hash(process.env.PASSWORD || 'password_key', 10)
+    // 🔥 หา user เดิมก่อน
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        username: dto.id ?? '',
+      },
+    });
 
-    const user = await this.prisma.user.create({
+    let user;
+
+    if (existingUser) {
+      // =========================
+      // 🔄 UPDATE (แก้ลายนิ้วมือ)
+      // =========================
+      user = await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          id: dto.userId, // ⚠️ ใช้แบบนี้ได้ แต่ไม่แนะนำระยะยาว
+          isVerified: true,
+          name: exists.name,
+        },
+      });
+    } else {
+      // =========================
+      // ➕ CREATE (ครั้งแรก)
+      // =========================
+      const passwordHash = await bcrypt.hash(
+        process.env.PASSWORD || 'password_key',
+        10
+      );
+
+      user = await this.prisma.user.create({
+        data: {
+          id: dto.userId,
+          username: dto.id ?? '',
+          passwordHash,
+          role: UserRole.INMATE,
+          name: exists.name,
+          status: 1,
+          isVerified: true,
+        },
+      });
+    }
+
+    // =========================
+    // 🔗 UPDATE inmate → link user
+    // =========================
+    await this.prisma.inmateProfile.update({
+      where: { id: exists.id },
       data: {
-        id: dto.userId,
-        username: dto.id ?? "",
-        passwordHash,
-        role: UserRole.INMATE,
-        name: exists!.name,
-        status: 1,
-        isVerified: true,
-      }
-    })
+        userId: user.id,
+      },
+    });
 
     return user;
   }
 
   async registerAdmin(dto: RegisterDto) {
     const exists = await this.prisma.user.findFirst({
-      where: { username: dto.username }
+      where: { 
+        OR: [
+          { username: dto.username },
+          { name: dto.name },
+        ],
+      }
     })
 
     if (exists) {
@@ -240,6 +298,7 @@ export class AuthService {
 
     const user = await this.prisma.user.create({
       data: {
+        id: dto.userId,
         username: dto.username,
         passwordHash,
         role: UserRole.ADMIN,

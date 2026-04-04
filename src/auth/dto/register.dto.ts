@@ -3,6 +3,10 @@ import { IsNumber, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-val
 export class RegisterDto {
   @IsNotEmpty()
   @IsString()
+  userId!: string;
+
+  @IsNotEmpty()
+  @IsString()
   username!: string;
 
   @IsOptional()
