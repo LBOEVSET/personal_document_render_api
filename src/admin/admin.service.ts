@@ -42,7 +42,7 @@ export class AdminService {
 
     return this.prisma.contentItem.create({
       data: {
-        id: newId,
+        //id: newId,
         title: dto.title,
         type: dto.type,
         department: dto.department,
