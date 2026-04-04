@@ -147,12 +147,12 @@ export class AdminService {
 
       case 'PDF':
         link = dto.file;
-        cover = `/${segments.join('/')}/cover-${dto.id}.png`;
+        cover = `/default/pdf_default.png`;
         break;
 
       case 'VIDEO':
         link = `${base}/content/vdo/${dto.id}`;
-        cover = null;
+        cover = `/default/video_default.jpeg`;
         break;
     }
 
@@ -198,6 +198,34 @@ export class AdminService {
     const nextNumber = lastNumber + 1;
 
     return `${prefix}-${nextNumber}`;
+  }
+
+  async deleteContent(id: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const item = await tx.contentItem.findUnique({
+        where: { id },
+      });
+
+      if (!item) {
+        throw new BadRequestException('Document not found');
+      }
+
+      // 🔥 ลบไฟล์จริง (ถ้ามี)
+      if (item.file) {
+        const filePath = `./uploads${item.file}`;
+
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      // 🔥 ลบ record
+      await tx.contentItem.delete({
+        where: { id },
+      });
+
+      return true;
+    });
   }
 }
 

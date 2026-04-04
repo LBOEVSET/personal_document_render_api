@@ -1,13 +1,23 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LoginDto {
   @IsNotEmpty()
   @IsString()
   username!: string;
 
+  @IsOptional()
+  @IsString()
+  password?: string = process.env.PASSWORD || 'password_key';
+}
+
+export class LoginInmateDto {
   @IsNotEmpty()
   @IsString()
-  password!: string;
+  userId!: string;
+
+  @IsOptional()
+  @IsString()
+  password?: string = process.env.PASSWORD || 'password_key';
 }
 
 export class RefreshTokenDto {

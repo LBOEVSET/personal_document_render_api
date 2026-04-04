@@ -102,11 +102,11 @@ async function main() {
       // PDF (LEGAL)
       // ======================
       ...[
-        { id:'pdf-1', department: Department.LEGAL, title:'การสืบสวนและจับกุม (Police)', link:'legal/4-main/pdf-1.pdf', cover:'/legal/4-main/cover-pdf-1.png', file: '/legal/4-main/pdf-1.pdf' },
-        { id:'pdf-2', department: Department.LEGAL, title:'การสอบสวน/ไต่สวนเบื้องต้น (Inquiry)', link:'legal/4-main/pdf-2.pdf', cover:'/legal/4-main/cover-pdf-2.png', file: '/legal/4-main/pdf-2.pdf' },
-        { id:'pdf-3', department: Department.LEGAL, title:'การฟ้องคดี (Prosecution)', link:'legal/4-main/pdf-3.pdf', cover:'/legal/4-main/cover-pdf-3.png', file: '/legal/4-main/pdf-3.pdf' },
-        { id:'pdf-4', department: Department.LEGAL, title:'การพิจารณาพิพากษา (Court)', link:'legal/4-main/pdf-4.pdf', cover:'/legal/4-main/cover-pdf-4.png', file: '/legal/4-main/pdf-4.pdf' },
-        { id:'pdf-5', department: Department.LEGAL, title:'การบังคับโทษ/ฟื้นฟู (Correction)', link:'legal/4-main/pdf-5.pdf', cover:'/legal/4-main/cover-pdf-5.png', file: '/legal/4-main/pdf-5.pdf' },
+        { department: Department.LEGAL, title:'การสืบสวนและจับกุม (Police)', link:'legal/4-main/pdf-1.pdf', cover:'/default/pdf_default.png', file: '/legal/4-main/pdf-1.pdf' },
+        { department: Department.LEGAL, title:'การสอบสวน/ไต่สวนเบื้องต้น (Inquiry)', link:'legal/4-main/pdf-2.pdf', cover:'/default/pdf_default.png', file: '/legal/4-main/pdf-2.pdf' },
+        { department: Department.LEGAL, title:'การฟ้องคดี (Prosecution)', link:'legal/4-main/pdf-3.pdf', cover:'/default/pdf_default.png', file: '/legal/4-main/pdf-3.pdf' },
+        { department: Department.LEGAL, title:'การพิจารณาพิพากษา (Court)', link:'legal/4-main/pdf-4.pdf', cover:'/default/pdf_default.png', file: '/legal/4-main/pdf-4.pdf' },
+        { department: Department.LEGAL, title:'การบังคับโทษ/ฟื้นฟู (Correction)', link:'legal/4-main/pdf-5.pdf', cover:'/default/pdf_default.png', file: '/legal/4-main/pdf-5.pdf' },
       ].map(i => ({
         ...mapRelationFromPath(i),
         type: ContentType.PDF,
@@ -116,7 +116,7 @@ async function main() {
       // PDF (PR)
       // ======================
       ...[
-        { id:'pdf-6', department: Department.PR, title:'การปฏิบัติงานของบุคลากร ทัณฑสถานหญิงกลางตาม ภารกิจหลัก', link:'pr/2-main/pdf-6.pdf', cover:'/pr/2-main/cover-pdf-1.png', file: '/pr/2-main/pdf-1.pdf' },
+        { department: Department.PR, title:'การปฏิบัติงานของบุคลากร ทัณฑสถานหญิงกลางตาม ภารกิจหลัก', link:'pr/2-main/pdf-6.pdf', cover:'/pr/2-main/cover-pdf-1.png', file: '/pr/2-main/pdf-1.pdf' },
       ].map(i => ({
         ...mapRelationFromPath(i),
         type: ContentType.PDF,
@@ -126,11 +126,11 @@ async function main() {
       // IMAGES (PR - sub)
       // ======================
       ...[
-        { id:'img-1', department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขัง', link:'pr/3-main/1-sub/img-1.png', cover:'/pr/3-main/1-sub/img-1.png' },
-        { id:'img-2', department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขังB', link:'pr/3-main/1-sub/img-2.png', cover:'/pr/3-main/1-sub/img-2.png' },
-        { id:'img-3', department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขังC', link:'pr/3-main/1-sub/img-3.png', cover:'/pr/3-main/1-sub/img-3.png' },
-        { id:'img-4', department: Department.PR, title:'กลุ่มงานเลื่อนขั้นผู้ต้องขัง', link:'pr/3-main/1-sub/img-4.jpg', cover:'/pr/3-main/1-sub/img-4.jpg' },
-        { id:'img-5', department: Department.PR, title:'กลุ่มงานวินัยผู้ต้องขัง', link:'pr/3-main/1-sub/img-5.png', cover:'/pr/3-main/1-sub/img-5.png' },
+        { department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขัง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขังB', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.PR, title:'กลุ่มงานส่งเสริมการจำแนกลักษณะผู้ต้องขังC', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.PR, title:'กลุ่มงานเลื่อนขั้นผู้ต้องขัง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.PR, title:'กลุ่มงานวินัยผู้ต้องขัง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
       ].map(i => ({
         ...mapRelationFromPath(i),
         type: ContentType.IMAGE,
@@ -140,12 +140,12 @@ async function main() {
       // IMAGES (LEGAL - group)
       // ======================
       ...[
-        { id:'img-6', department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'legal/1-main/1-sub/1-group/img-6.png', cover:'/legal/1-main/1-sub/1-group/img-6.png' },
-        { id:'img-7', department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'legal/1-main/1-sub/1-group/img-7.png', cover:'/legal/1-main/1-sub/1-group/img-7.png' },
-        { id:'img-8', department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'legal/1-main/1-sub/1-group/img-8.png', cover:'/legal/1-main/1-sub/1-group/img-8.png' },
-        { id:'img-9', department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'legal/1-main/1-sub/1-group/img-9.png', cover:'/legal/1-main/1-sub/1-group/img-9.png' },
-        { id:'img-10', department: Department.LEGAL, title:'การฝากขัง', link:'legal/1-main/1-sub/1-group/img-10.jpg', cover:'/legal/1-main/1-sub/1-group/img-10.jpg' },
-        { id:'img-11', department: Department.LEGAL, title:'การฝากขัง', link:'legal/1-main/1-sub/1-group/img-11.jpg', cover:'/legal/1-main/1-sub/1-group/img-11.jpg' },
+        { department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.LEGAL, title:'กฎหมายต่างๆที่เกี่ยวข้อง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.LEGAL, title:'การฝากขัง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
+        { department: Department.LEGAL, title:'การฝากขัง', link:'/default/image_default.jpg', cover:'/default/image_default.jpg' },
       ].map(i => ({
         ...mapRelationFromPath(i),
         type: ContentType.IMAGE,
@@ -155,9 +155,9 @@ async function main() {
       // VIDEOS (PR - main)
       // ======================
       ...[
-        { id:'v7', department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v7', file:'/pr/1-main/v7.mp4' },
-        { id:'v8', department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v8', file:'/pr/1-main/v8.mp4' },
-        { id:'v9', department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v9', file:'/pr/1-main/v9.mp4' },
+        { department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v7', file:'/pr/1-main/v7.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v8', file:'/pr/1-main/v8.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.PR, title:'ฝ่ายบริหารทั่วไป', link:'pr/content/vdo/v9', file:'/pr/1-main/v9.mp4', cover:'/default/video_default.jpeg' },
       ].map(v => ({
         ...mapRelationFromPath(v),
         type: ContentType.VIDEO,
@@ -167,9 +167,9 @@ async function main() {
       // VIDEOS (LEGAL - sub)
       // ======================
       ...[
-        { id:'v1', department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563', link:'legal/content/vdo/v1', file:'/legal/1-main/2-sub/v1.mp4' },
-        { id:'v2', department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563 (ต่อ)1', link:'legal/content/vdo/v2', file:'/legal/1-main/2-sub/v2.mp4' },
-        { id:'v3', department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563 (ต่อ)2', link:'legal/content/vdo/v3', file:'/legal/1-main/2-sub/v3.mp4' },
+        { department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563', link:'legal/content/vdo/v1', file:'/legal/1-main/v1.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563 (ต่อ)1', link:'legal/content/vdo/v2', file:'/legal/1-main/v2.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.LEGAL, title:'กฎกระทรวงจำแนกฯ พ.ศ. 2563 (ต่อ)2', link:'legal/content/vdo/v3', file:'/legal/1-main/v3.mp4', cover:'/default/video_default.jpeg' },
       ].map(v => ({
         ...mapRelationFromPath(v),
         type: ContentType.VIDEO,
@@ -179,9 +179,9 @@ async function main() {
       // VIDEOS (PR - group)
       // ======================
       ...[
-        { id:'v4', department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด', link:'pr/content/vdo/v4', file:'/pr/3-main/2-sub/3-group/v4.mp4' },
-        { id:'v5', department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด (ต่อ)1', link:'pr/content/vdo/v5', file:'/pr/3-main/2-sub/3-group/v5.mp4' },
-        { id:'v6', department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด (ต่อ)2', link:'pr/content/vdo/v6', file:'/pr/3-main/2-sub/3-group/v6.mp4' },
+        { department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด', link:'pr/content/vdo/v4', file:'/pr/3-main/v4.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด (ต่อ)1', link:'pr/content/vdo/v5', file:'/pr/3-main/v5.mp4', cover:'/default/video_default.jpeg' },
+        { department: Department.PR, title:'การเลื่อนชั้นนักโทษเด็ดขาด (ต่อ)2', link:'pr/content/vdo/v6', file:'/pr/3-main/v6.mp4', cover:'/default/video_default.jpeg' },
       ].map(v => ({
         ...mapRelationFromPath(v),
         type: ContentType.VIDEO,
@@ -200,7 +200,7 @@ async function main() {
       passwordHash: "$2b$10$u1n9r3ZzjH8Qv7u5XGzUOeGqLh0nPjK1sYpJtXQZy8o5c6aWlG", // hash ของ "password123"
       role: 'INMATE',
       name: "ดาลิกา พงศ์อนันตโชติ",
-      //profileImage: "/uploads/inmate/1710000000000-123456789.png",
+      profileImage: "/uploads/inmate/1775160950575-499198019.png",
       status: 1
     }
   });
@@ -212,6 +212,7 @@ async function main() {
       status: "ชั้นดีมาก",
       cases: 1,
       caseType: "เสพและมีเมทแอมเฟตามีนไว้ในครอบครองเพื่อจำหน่าย",
+      category: "ผู้ต้องขังระหว่าง อุทธรณ์-ฎีกา",
       sentence: "3 ปี 0 เดือน 7 วัน",
       startDate: new Date("2025-12-29T00:00:00.000Z"),
       transferFrom: "-",

@@ -42,8 +42,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   ) {
     const req = context.switchToHttp().getRequest();
     const requestId = req.requestId;
-    console.log('LOG USER');
-    console.log(user);
 
     if (err || !user) {
       this.logger.logInbound({

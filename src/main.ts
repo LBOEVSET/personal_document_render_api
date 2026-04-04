@@ -5,17 +5,27 @@ import { requestIdMiddleware } from './common/middleware/request-id.middleware';
 import { RequestContextService } from './common/middleware/request-context.service';
 import { LoggingInterceptor } from './core/logger/logging.interceptor';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express'
 import * as bodyParser from 'body-parser';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  //const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+    prefix: '/uploads',
+  });
+
   app.enableCors({ 
-    origin: false,
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: [
       "Content-Type",
       "Authorization",
       "Accept"
     ],
+    credentials: true,
   });
 
   // Enable shutdown hooks

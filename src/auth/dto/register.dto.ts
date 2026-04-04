@@ -5,9 +5,9 @@ export class RegisterDto {
   @IsString()
   username!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(6)
-  password!: string;
+  password?: string = process.env.PASSWORD || 'password_key';
 
   @IsNotEmpty()
   @IsString()
@@ -20,6 +20,42 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   secret?: string;
+}
+
+export class RegisterInmateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  id!: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name!: string;
+
+  @IsOptional()
+  @IsString()
+  profileImage?: string;
+
+  @IsOptional()
+  @IsString()
+  secret?: string;
+}
+
+export class VerifyRegisterInmateUserDto {
+  @IsNotEmpty()
+  @IsString()
+  userId!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  id!: string;
+
+  @IsOptional()
+  @IsString()
+  name?: string;
 }
 
 export class CreateInmateDetailDto {
@@ -49,13 +85,21 @@ export class RegisterInmateDto {
   @IsString()
   id!: string;
 
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
   @IsNotEmpty()
   @IsString()
   name!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(6)
-  password!: string;
+  password?: string = process.env.PASSWORD || 'password_key';
 
   @IsNotEmpty()
   @IsString()
@@ -77,9 +121,9 @@ export class RegisterInmateDto {
   @IsString()
   startDate!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  transferFrom!: string;
+  transferFrom?: string;
 
   @IsNotEmpty()
   @IsString()

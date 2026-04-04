@@ -1,9 +1,11 @@
-import { Controller, Post, Put, Delete, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Put, 
+  Delete, Body, UseGuards, UseInterceptors, 
+  BadRequestException, UploadedFile } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, LogOutDto, RefreshTokenDto } from './dto/login.dto';
+import { LoginDto, LoginInmateDto, LogOutDto, RefreshTokenDto } from './dto/login.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { RegisterInmateDto, RegisterDto } from './dto/register.dto';
+import { RegisterInmateDto, RegisterDto, VerifyRegisterInmateUserDto } from './dto/register.dto';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import {
   ApiTags,
@@ -12,6 +14,7 @@ import {
   ApiBearerAuth,
   ApiResponse,
 } from '@nestjs/swagger';
+import {FileInterceptor} from '@nestjs/platform-express';
 
 @ApiTags('Auth')
 @ApiBearerAuth()
@@ -42,8 +45,9 @@ export class AuthController {
     @Body() body: RegisterInmateDto,
   ) {
     const userDto = {
-      username: body.id,
-      password: body.password,
+      id: body.userId ?? '',
+      username: body.username,
+      password: process.env.PASSWORD || 'password_key',
       name: body.name,
       profileImage: body.profileImage,
       role: 'INMATE',
@@ -56,12 +60,56 @@ export class AuthController {
       secret: undefined
     }
 
-    const inmateData = await this.authService.createInmateData(dto);
+    const inmateData = await this.authService.upsertInmateData(dto);
     
     return {
       statusCode: 201,
       message: 'Inmate registered successfully',
       data: { ...userData, inmateData }
+    };
+  }
+
+  @Post('register/inmate-xlsx')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadInmateXlsx(@UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('File is required');
+
+    return this.authService.importInmateFromXlsx(file);
+  }
+
+  @UseGuards(RolesGuard)
+  @Post('pre-register/inmate')
+  async preRegisterInmate(
+    @Body() body: RegisterInmateDto,
+  ) {
+    const dto = {
+      ...body,
+      userId: body.userId,
+      profileImage: body.profileImage,
+      secret: undefined
+    }
+
+    const inmateData = await this.authService.upsertInmateData(dto);
+    
+    return {
+      statusCode: 201,
+      message: 'Inmate pre-registered successfully',
+      data: { inmateData }
+    };
+  }
+
+  @UseGuards(RolesGuard)
+  @Post('verify-register/inmate')
+  async verifyRegisterInmate(
+    @Body() body: VerifyRegisterInmateUserDto,
+  ) {
+
+    const userData = await this.authService.verifyRegisterInmate(body);
+    
+    return {
+      statusCode: 201,
+      message: 'Inmate verified successfully',
+      data: { ...userData }
     };
   }
 
@@ -108,6 +156,31 @@ export class AuthController {
   })
   async login(@Body() body: LoginDto) {
     const result = await this.authService.login(body);
+
+    return {
+      statusCode: 200,
+      message: 'Login successful',
+      data: result
+    };
+  }
+
+  @Public()
+  @Post('login-inmate')
+  @ApiOperation({ summary: 'Login inmate' })
+  @ApiBody({ type: LoginInmateDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    schema: {
+      example: {
+        statusCode: 200,
+        message: 'Login successful',
+        data: {}
+      },
+    },
+  })
+  async loginInmate(@Body() body: LoginInmateDto) {
+    const result = await this.authService.loginInmate(body);
 
     return {
       statusCode: 200,

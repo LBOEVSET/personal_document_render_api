@@ -14,6 +14,7 @@ export class InmateService {
         user: {
           select: {
             profileImage: true,
+            isVerified: true,
           },
         },
       },
@@ -23,6 +24,7 @@ export class InmateService {
     const result = data.map((item) => ({
       ...item,
       profileImage: item.user?.profileImage ?? "/uploads/inmate/default.jpg",
+      isVerified: item.user?.isVerified ?? false,
       totalDays: this.calculateDays(
         item.startDate,
         item.releaseDate,
@@ -45,11 +47,11 @@ export class InmateService {
         user: {
           select: {
             profileImage: true,
+            isVerified: true,
           },
         },
       },
     });
-
     if(user.role !== 'ADMIN' && data?.userId !== user.id) {
       throw new UnauthorizedException('You do not have access to this inmate profile');
     }
@@ -66,6 +68,7 @@ export class InmateService {
     const result = {
       ...data,
       profileImage: data?.user?.profileImage ?? "/uploads/inmate/default.jpg",
+      isVerified: data?.user?.isVerified ?? false,
       totalDays,
       daysLeft,
       user: undefined,

@@ -1,4 +1,4 @@
-import { Controller, Body, Query, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
+import { Controller, Delete, Param, Body, Query, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException  } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { AdminService, AdminUploadService } from './admin.service';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -179,6 +179,26 @@ export class AdminController {
       data: {
         url: cleanPath.replace(/\\/g, '/'),
       },
+    };
+  }
+
+  @Delete('delete/document/:id')
+  @ApiOperation({ summary: 'Delete document' })
+  @ApiResponse({
+    status: 200,
+    schema: {
+      example: {
+        statusCode: 200,
+        message: 'Document deleted successfully',
+      },
+    },
+  })
+  async deleteDocument(@Param('id') id: string) {
+    await this.service.deleteContent(id);
+
+    return {
+      statusCode: 200,
+      message: 'Document deleted successfully',
     };
   }
 

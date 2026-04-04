@@ -51,9 +51,9 @@ export class InmateProfileDto {
   @IsString()
   startDate!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  transferFrom!: string;
+  transferFrom?: string;
 
   @IsNotEmpty()
   @IsString()

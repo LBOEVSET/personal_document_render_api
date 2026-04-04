@@ -51,14 +51,14 @@ export class MediaService {
       // =========================
       // map type
       // =========================
-      let type: 'gallery' | 'vdo' | 'pdf';
+      let type: 'image' | 'video' | 'pdf';
 
       switch (item.type) {
         case 'IMAGE':
-          type = 'gallery';
+          type = 'image';
           break;
         case 'VIDEO':
-          type = 'vdo';
+          type = 'video';
           break;
         case 'PDF':
           type = 'pdf';
@@ -119,14 +119,14 @@ export class MediaService {
     });
 
     const result = items.map((item) => {
-      let type: 'gallery' | 'vdo' | 'pdf';
+      let type: 'image' | 'video' | 'pdf';
 
       switch (item.type) {
         case 'IMAGE':
-          type = 'gallery';
+          type = 'image';
           break;
         case 'VIDEO':
-          type = 'vdo';
+          type = 'video';
           break;
         case 'PDF':
           type = 'pdf';

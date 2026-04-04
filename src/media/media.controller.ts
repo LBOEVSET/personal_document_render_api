@@ -10,12 +10,12 @@ import {
 } from '@nestjs/swagger';
 import { MediaSubCategoryDto } from './dto/media.dto';
 
-@ApiTags('MediaV2')
+@ApiTags('Media')
 @Public()
 @UseGuards(JwtAuthGuard)
 @Controller({
   path: 'media',
-  version: '2',
+  version: '1',
 })
 export class MediaController {
   constructor(private service: MediaService) {}

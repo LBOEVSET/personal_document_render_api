@@ -29,7 +29,7 @@ model MainMenu {
 }
 
 model ContentItem {
-  id    String @id
+  id String @id @default(cuid())
   title String
 
   type ContentType
@@ -74,19 +74,23 @@ model PRPracticeMenu {
 }
 
 model InmateProfile {
-  id           String @id
-  userId       String @unique
+  id           String  @id
+  userId       String? @unique
   name         String
   status       String
   cases        Int
   caseType     String
+  category     String
   sentence     String
   startDate    DateTime
-  transferFrom String
   releaseDate  DateTime
+  transferFrom String
+  imprisonDate DateTime?
+  endDate      DateTime?
+  lastDate     DateTime?
   progressStep Int
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 
   detail InmateDetail?
   @@index([userId])
@@ -95,6 +99,7 @@ model InmateProfile {
 model InmateDetail {
   id        String @id
   age       String
+  ageTotal  Int?
   nationality String
   religion  String
   holdType  String
@@ -116,6 +121,7 @@ model User {
   status          Int             @default(1)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @default(now()) @updatedAt
+  isVerified      Boolean         @default(false)
 
   inmateProfile   InmateProfile?
 
