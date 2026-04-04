@@ -151,7 +151,7 @@ export class AdminService {
         break;
 
       case 'VIDEO':
-        link = `${base}/content/vdo/${dto.id}`;
+        link = dto.file;
         cover = `/default/video_default.jpeg`;
         break;
     }
@@ -228,50 +228,84 @@ export class AdminService {
     });
   }
 
-async upsertInmateData(dto: any) {
-  return this.prisma.$transaction(async (tx) => {
-    return tx.inmateProfile.upsert({
-      where: {
-        id: dto.id,
-      },
-      update: {
-        name: dto.name,
-        status: dto.status,
-        cases: dto.cases,
-        caseType: dto.caseType,
-        category: dto.category ?? '',
-        sentence: dto.sentence,
+  async upsertInmateData(dto: any) {
+    return this.prisma.$transaction(async (tx) => {
+      return tx.inmateProfile.upsert({
+        where: {
+          id: dto.id,
+        },
+        update: {
+          name: dto.name,
+          status: dto.status,
+          cases: dto.cases,
+          caseType: dto.caseType,
+          category: dto.category ?? '',
+          sentence: dto.sentence,
 
-        startDate: new Date(dto.startDate),
-        transferFrom: dto.transferFrom ?? '',
-        releaseDate: new Date(dto.releaseDate),
+          startDate: new Date(dto.startDate),
+          transferFrom: dto.transferFrom ?? '',
+          releaseDate: new Date(dto.releaseDate),
 
-        progressStep: dto.progressStep ?? 1,
+          progressStep: dto.progressStep ?? 1,
 
-        imprisonDate: dto.imprisonDate ? new Date(dto.imprisonDate) : null,
-        endDate: dto.endDate ? new Date(dto.endDate) : null,
-        lastDate: dto.lastDate ? new Date(dto.lastDate) : null,
+          imprisonDate: dto.imprisonDate ? new Date(dto.imprisonDate) : null,
+          endDate: dto.endDate ? new Date(dto.endDate) : null,
+          lastDate: dto.lastDate ? new Date(dto.lastDate) : null,
 
-        // ✅ update profileImage ผ่าน user (ถ้ามี)
-        ...(dto.userId && dto.profileImage && {
-          user: {
-            update: {
-              profileImage: dto.profileImage,
-            },
-          },
-        }),
-
-        ...(dto.detail && {
-          detail: {
-            upsert: {
+          // ✅ update profileImage ผ่าน user (ถ้ามี)
+          ...(dto.userId && dto.profileImage && {
+            user: {
               update: {
-                age: dto.detail.age,
-                ageTotal: dto.detail.ageTotal ?? 0,
-                nationality: dto.detail.nationality,
-                religion: dto.detail.religion,
-                holdType: dto.detail.holdType,
-                holdAgency: dto.detail.holdAgency,
+                profileImage: dto.profileImage,
               },
+            },
+          }),
+
+          ...(dto.detail && {
+            detail: {
+              upsert: {
+                update: {
+                  age: dto.detail.age,
+                  ageTotal: dto.detail.ageTotal ?? 0,
+                  nationality: dto.detail.nationality,
+                  religion: dto.detail.religion,
+                  holdType: dto.detail.holdType,
+                  holdAgency: dto.detail.holdAgency,
+                },
+                create: {
+                  id: `detail-${dto.id}`,
+                  age: dto.detail.age,
+                  ageTotal: dto.detail.ageTotal ?? 0,
+                  nationality: dto.detail.nationality,
+                  religion: dto.detail.religion,
+                  holdType: dto.detail.holdType,
+                  holdAgency: dto.detail.holdAgency,
+                },
+              },
+            },
+          }),
+        },
+        create: {
+          id: dto.id,
+          name: dto.name,
+          status: dto.status,
+          cases: dto.cases,
+          caseType: dto.caseType,
+          category: dto.category ?? '',
+          sentence: dto.sentence,
+
+          startDate: new Date(dto.startDate),
+          transferFrom: dto.transferFrom ?? '',
+          releaseDate: new Date(dto.releaseDate),
+
+          progressStep: dto.progressStep ?? 1,
+
+          imprisonDate: dto.imprisonDate ? new Date(dto.imprisonDate) : null,
+          endDate: dto.endDate ? new Date(dto.endDate) : null,
+          lastDate: dto.lastDate ? new Date(dto.lastDate) : null,
+
+          ...(dto.detail && {
+            detail: {
               create: {
                 id: `detail-${dto.id}`,
                 age: dto.detail.age,
@@ -282,49 +316,15 @@ async upsertInmateData(dto: any) {
                 holdAgency: dto.detail.holdAgency,
               },
             },
-          },
-        }),
-      },
-      create: {
-        id: dto.id,
-        name: dto.name,
-        status: dto.status,
-        cases: dto.cases,
-        caseType: dto.caseType,
-        category: dto.category ?? '',
-        sentence: dto.sentence,
-
-        startDate: new Date(dto.startDate),
-        transferFrom: dto.transferFrom ?? '',
-        releaseDate: new Date(dto.releaseDate),
-
-        progressStep: dto.progressStep ?? 1,
-
-        imprisonDate: dto.imprisonDate ? new Date(dto.imprisonDate) : null,
-        endDate: dto.endDate ? new Date(dto.endDate) : null,
-        lastDate: dto.lastDate ? new Date(dto.lastDate) : null,
-
-        ...(dto.detail && {
-          detail: {
-            create: {
-              id: `detail-${dto.id}`,
-              age: dto.detail.age,
-              ageTotal: dto.detail.ageTotal ?? 0,
-              nationality: dto.detail.nationality,
-              religion: dto.detail.religion,
-              holdType: dto.detail.holdType,
-              holdAgency: dto.detail.holdAgency,
-            },
-          },
-        }),
-      },
-      include: {
-        detail: true,
-        user: true,
-      },
+          }),
+        },
+        include: {
+          detail: true,
+          user: true,
+        },
+      });
     });
-  });
-}
+  }
 }
 
 @Injectable()
@@ -387,13 +387,13 @@ export class AdminUploadService {
   dynamicStorage() {
     return diskStorage({
       destination: (req, file, cb) => {
-        const dto = req.body;
+        const dto = req.query;
 
         const base = dto.department === 'LEGAL' ? 'legal' : 'pr';
 
         const segments = [base];
 
-        if (dto.mainId) segments.push(dto.mainId);
+        if (dto.mainId) segments.push(String(dto.mainId));
 
         const folder = `./uploads/${segments.join('/')}`;
 
