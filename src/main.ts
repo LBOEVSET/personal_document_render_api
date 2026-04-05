@@ -10,13 +10,9 @@ import * as bodyParser from 'body-parser';
 import { join } from 'path';
 
 async function bootstrap() {
-  //const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads',
-  });
-
+  // 🚨 1. ย้าย enableCors ขึ้นมาไว้ก่อนการตั้งค่า Static Assets
   app.enableCors({ 
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
@@ -26,6 +22,11 @@ async function bootstrap() {
       "Accept"
     ],
     credentials: true,
+  });
+
+  // 🚨 2. ให้ useStaticAssets อยู่หลัง CORS เสมอ!
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+    prefix: '/uploads',
   });
 
   // Enable shutdown hooks
@@ -70,7 +71,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(process.env.PORT || 3000, '0.0.0.0');
-  console.log(`Application is running on port: ${process.env.PORT || 3000}`);
+  await app.listen(process.env.PORT || 3111, '0.0.0.0'); // เห็นรูปคุณรันพอร์ต 3111 เลยขอปรับให้ตรงกันครับ
+  console.log(`Application is running on port: ${process.env.PORT || 3111}`);
 }
 bootstrap();
